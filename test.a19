@@ -1,0 +1,19 @@
+note jump to the start of the instructions
+jmp init
+
+note create a test variable
+mark var_a
+data 20
+
+note create a stack of 8 bytes
+mark stack
+data 0 0 0 0
+
+mark init
+note setup the stack pointer
+set SP stack
+
+mark test
+add var_a 5
+
+halt
