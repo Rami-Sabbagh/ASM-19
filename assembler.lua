@@ -29,6 +29,8 @@ local errorMessages = {
     "Label already marked at line %d", --16, Number (Line number)
     "The instruction (DATA) must have at least one operand", --17
     "Label (%s) is not marked anywhere", --18, String (Label name)
+
+    "Offset out of range [-16, 15]", --19 TODO: move this message up
 }
 
 --The ISA registers
@@ -164,8 +166,10 @@ local function validateMemoryReference(operand)
     if #offset ~= 1 then
         if offset:sub(1,1) == "+" then
             offset = tonumber(offset:sub(2,-2), 10)
+            if offset > 15 then fail(19) end
         else
             offset = tonumber(offset:sub(1,-2), 10)
+            if offset < -16 then fail(19) end
         end
     else
         offset = 0
