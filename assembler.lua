@@ -179,8 +179,6 @@ local function assembleLine(line)
     local instruction = nextOperand():upper()
     local instructionType = instructionsSet[instruction]
 
-    print("instruction", instruction, instructionType)
-
     --Unknown instruction
     if not instructionType then fail(10, instruction) end
 
@@ -307,8 +305,6 @@ local function assembleLine(line)
                 line=lineNumber,
                 address=nextAddress
             }
-
-            print("Mark at address", nextAddress)
 
         elseif instruction == "DATA" then
 
