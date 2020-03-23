@@ -1,0 +1,40 @@
+NOTE -- SETUP THE STACK --
+SET SP STACK
+
+NOTE --[[ THE PROGRAM START ]]--
+
+SET A MYSTRING
+CALL STRING.LENGTH
+HALT
+
+NOTE --[[ THE PROGRAM END ]]--
+
+NOTE --== VARIABLES ==--
+
+MARK MYSTRING
+NOTE "Hello"
+DATA 72 101 108 108 111 0
+
+MARK STACK
+DATA 0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0
+
+NOTE --== STRING LENGTH FUNCTION ==--
+
+NOTE String length function
+NOTE The register A should point to the first character
+NOTE after calling the register A will contain the string length
+
+MARK STRING.LENGTH
+PUSH B
+SET B A
+
+MARK LOOP
+GET [A] T
+JE FOUND_NULL
+ADD A 2
+JMP LOOP
+
+MARK FOUND_NULL
+SUB A B
+POP B
+RET
