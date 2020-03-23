@@ -47,7 +47,7 @@ local instructionsSet = {
 
     --[3]: 2 operands instructions
     {"ADD", "SUB", "MUL", "DIV", "MOD", "SWIZ", "AND", "OR", "XOR", "SHL", "SHR", "SAR", "SET", "GET", "CMP"},
-    
+
     --[4]: Special instructions
     {"EXTA", "EXTB", "MARK", "NOTE", "DATA"}
 }
@@ -212,7 +212,7 @@ local function assembleLine(line)
 
             nextAddress = nextAddress + 3 --3 bytes instruction
         end
-        
+
         table.insert(program, {instruction, operand1})
 
     elseif instructionType == 3 then --[3]: 2 operands instructions
@@ -312,7 +312,7 @@ local function assembleLine(line)
 
                 if not value then --A label
                     usedLabels[operand] = usedLabels[operand] or {}
-    
+
                     table.insert(usedLabels[operand], {
                         line = lineNumber,
                         operand = operandNumber,
@@ -320,7 +320,7 @@ local function assembleLine(line)
                     })
                 end
 
-                table.insert(parsed, value or operand)
+                table.insert(parsed, {1, value or operand})
             end
 
             if operandNumber == 0 then fail(17) end
@@ -344,7 +344,7 @@ if not source or not destination then
 end
 
 local sourceFile = assert(io.open(source, "r"))
-local destinationFile = assert(io.open(destination, "wb"))
+--local destinationFile = assert(io.open(destination, "wb"))
 
 for line in sourceFile:lines() do
     lineNumber = lineNumber + 1
@@ -355,12 +355,16 @@ for line in sourceFile:lines() do
     end
 end
 
---Check for non existing labels
+--Replace labels with their actual values and check for non existing labels
 for label, usedIn in pairs(usedLabels) do
     if not labels[label] then
         lineNumber = usedIn[1].line
         operandNumber = usedIn[1].operand
         fail(18, label)
+    end
+
+    for _, replaceAt in ipairs(usedIn) do
+        program[replaceAt.instruction][replaceAt.operand+1][2] = replaceAt.address
     end
 end
 
