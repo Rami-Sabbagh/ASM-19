@@ -399,7 +399,7 @@ for _, instruction in ipairs(program) do
             ))
         elseif instruction[2][1] == 2 then --Memory reference
             local offset = instruction[2][3]
-            if offset < 0 then offset = -offset + lshift(1, 4) end
+            if offset < 0 then offset = 0x1F + offset + 1 end
             destinationFile:write(string.char(
                 registers[instruction[2][2]] + lshift(offset, 3)
             ))
@@ -425,7 +425,7 @@ for _, instruction in ipairs(program) do
                 ))
             elseif instruction[2][1] == 2 then --Memory reference
                 local offset = instruction[2][3]
-                if offset < 0 then offset = -offset + lshift(1, 4) end
+                if offset < 0 then offset = 0x1F + offset + 1 end
                 destinationFile:write(string.char(
                     registers[instruction[2][2]] + lshift(offset, 3)
                 ))
