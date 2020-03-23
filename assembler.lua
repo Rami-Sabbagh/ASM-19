@@ -119,7 +119,7 @@ end
 --Returns the validated number if it was a literal number
 local function validateLiteralValue(operand)
     --Must be a label name
-    if operand:match("^%D") then
+    if operand:match("^[^%-%d]") then
         return validateLabelName(operand)
     end
 
