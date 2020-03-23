@@ -63,7 +63,7 @@ end
 
 --The instructions encoded id
 local instructionsNumeration = {
-    "HALT", "NOOP", --Miscellaneuous
+    "HALT", "NOP", --Miscellaneuous
     "ADD", "SUB", "MUL", "DIV", "MOD", "SWIZ", --Arithmetic
     "NOT", "OR", "XOR", "SHL", "SHR", "SAR", --Bitwise
     "SET", "GET", "PUSH", "POP", "CALL", "RET", --Transfare
