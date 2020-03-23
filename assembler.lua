@@ -178,7 +178,7 @@ local function assembleLine(line)
 
     if instructionType == 1 then --[1]: No operands instructions
         if nextOperand() then fail(11, instruction) end
-
+        table.insert(program, {instruction})
         nextAddress = nextAddress + 1 --1 byte instruction
 
     elseif instructionType == 2 then --[2]: 1 operand instructions
@@ -187,10 +187,12 @@ local function assembleLine(line)
         if nextOperand() then fail(12, instruction) end
 
         if registers[operand1] then
+            operand1 = {0, operand1}
 
             nextAddress = nextAddress + 2 --2 bytes instruction
         elseif operand1:sub(1,1) == "[" then
-            validateMemoryReference(operand1)
+            local register, offset = validateMemoryReference(operand1)
+            operand1 = {2, register, offset}
 
             nextAddress = nextAddress + 3 --3 bytes instruction
         else
@@ -206,8 +208,12 @@ local function assembleLine(line)
                 })
             end
 
+            operand1 = {1, value or operand1}
+
             nextAddress = nextAddress + 3 --3 bytes instruction
         end
+        
+        table.insert(program, {instruction, operand1})
 
     elseif instructionType == 3 then --[3]: 2 operands instructions
         operandNumber = operandNumber + 1
@@ -217,10 +223,12 @@ local function assembleLine(line)
         if nextOperand() then fail(13, instruction) end
 
         if registers[operand1] then
+            operand1 = {0, operand1}
 
             nextAddress = nextAddress + 1
         elseif operand1:sub(1,1) == "[" then
-            validateMemoryReference(operand1)
+            local register, offset = validateMemoryReference(operand1)
+            operand1 = {2, register, offset}
 
             nextAddress = nextAddress + 1
         else
@@ -236,10 +244,13 @@ local function assembleLine(line)
                 })
             end
 
+            operand1 = {1, value or operand1}
+
             nextAddress = nextAddress + 2
         end
 
         if registers[operand2] then
+            operand2 = {0, operand2}
 
             nextAddress = nextAddress + 1
         else
@@ -255,12 +266,16 @@ local function assembleLine(line)
                 })
             end
 
+            operand2 = {1, value or operand2}
+
             nextAddress = nextAddress + 2
         end
 
-        if not registers[operand1] or not registers[operand2] then
+        if operand1[1] ~= 0 or operand2[1] ~= 0 then
             nextAddress = nextAddress + 1
         end
+
+        table.insert(program, {instruction, operand1, operand2})
 
     elseif instructionType == 4 then --[4]: Special instructions
 
@@ -268,6 +283,8 @@ local function assembleLine(line)
             operandNumber = operandNumber + 1
             local bits = nextOperand() or fail(12, instruction)
             if nextOperand() then fail(12, instruction) end
+
+            --TODO: Implement extension instructions assembling
 
         elseif instruction == "MARK" then
             operandNumber = operandNumber + 1
@@ -287,6 +304,8 @@ local function assembleLine(line)
 
         elseif instruction == "DATA" then
 
+            local parsed = {instruction}
+
             for operand in nextOperand do
                 operandNumber = operandNumber + 1
                 local value = validateLiteralValue(operand)
@@ -300,9 +319,13 @@ local function assembleLine(line)
                         instruction = #program + 1
                     })
                 end
+
+                table.insert(parsed, value or operand)
             end
 
             if operandNumber == 0 then fail(17) end
+
+            table.insert(program, parsed)
 
             nextAddress = nextAddress + operandNumber*2 --2 bytes for each value
 
