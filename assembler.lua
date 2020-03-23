@@ -364,7 +364,7 @@ for label, usedIn in pairs(usedLabels) do
     end
 
     for _, replaceAt in ipairs(usedIn) do
-        program[replaceAt.instruction][replaceAt.operand+1][2] = replaceAt.address
+        program[replaceAt.instruction][replaceAt.operand+1][2] = labels[label].address
     end
 end
 
