@@ -25,6 +25,7 @@ local errorMessages = {
     "The external instruction operand can't be more than ? bits", --15
     "Label already marked at line %d", --16, Number (Line number)
     "The instruction (DATA) must have at least one operand", --17
+    "Label (%s) is not marked anywhere", --18, String (Label name)
 }
 
 --The ISA registers
@@ -193,7 +194,17 @@ local function assembleLine(line)
 
             nextAddress = nextAddress + 3 --3 bytes instruction
         else
-            validateLiteralValue(operand1)
+            local value = validateLiteralValue(operand1)
+
+            if not value then --A label
+                usedLabels[operand1] = usedLabels[operand1] or {}
+
+                table.insert(usedLabels[operand1], {
+                    line = lineNumber,
+                    operand = operandNumber,
+                    instruction = #program + 1
+                })
+            end
 
             nextAddress = nextAddress + 3 --3 bytes instruction
         end
@@ -213,7 +224,17 @@ local function assembleLine(line)
 
             nextAddress = nextAddress + 1
         else
-            validateLiteralValue(operand1)
+            local value = validateLiteralValue(operand1)
+
+            if not value then --A label
+                usedLabels[operand1] = usedLabels[operand1] or {}
+
+                table.insert(usedLabels[operand1], {
+                    line = lineNumber,
+                    operand = operandNumber-1,
+                    instruction = #program + 1
+                })
+            end
 
             nextAddress = nextAddress + 2
         end
@@ -222,7 +243,17 @@ local function assembleLine(line)
 
             nextAddress = nextAddress + 1
         else
-            validateLiteralValue(operand2)
+            local value = validateLiteralValue(operand2)
+
+            if not value then --A label
+                usedLabels[operand2] = usedLabels[operand2] or {}
+
+                table.insert(usedLabels[operand2], {
+                    line = lineNumber,
+                    operand = operandNumber,
+                    instruction = #program + 1
+                })
+            end
 
             nextAddress = nextAddress + 2
         end
@@ -258,7 +289,17 @@ local function assembleLine(line)
 
             for operand in nextOperand do
                 operandNumber = operandNumber + 1
-                validateLiteralValue(operand)
+                local value = validateLiteralValue(operand)
+
+                if not value then --A label
+                    usedLabels[operand] = usedLabels[operand] or {}
+    
+                    table.insert(usedLabels[operand], {
+                        line = lineNumber,
+                        operand = operandNumber,
+                        instruction = #program + 1
+                    })
+                end
             end
 
             if operandNumber == 0 then fail(17) end
@@ -288,6 +329,15 @@ for line in sourceFile:lines() do
         operandNumber = 0
 
         assembleLine(line)
+    end
+end
+
+--Check for non existing labels
+for label, usedIn in pairs(usedLabels) do
+    if not labels[label] then
+        lineNumber = usedIn[1].line
+        operandNumber = usedIn[1].operand
+        fail(18, label)
     end
 end
 
