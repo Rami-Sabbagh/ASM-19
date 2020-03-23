@@ -1,5 +1,8 @@
 --COASM-19 Assembler
 
+local bit = require("bit")
+local band, lshift, rshift = bit.band, bit.lshift, bit.rshift
+
 --== ISA Variables ==--
 
 --The assembler error messages, they're passed to string.format
@@ -137,6 +140,11 @@ local function validateLiteralValue(operand)
         fail(6)
     elseif not signed and (value < 0 or value > 65535) then
         fail(7)
+    end
+
+    --Encode signed short
+    if signed and value < 0 then
+        value = 0xFFFF + value + 1
     end
 
     return value
@@ -344,7 +352,7 @@ if not source or not destination then
 end
 
 local sourceFile = assert(io.open(source, "r"))
---local destinationFile = assert(io.open(destination, "wb"))
+local destinationFile = assert(io.open(destination, "wb"))
 
 for line in sourceFile:lines() do
     lineNumber = lineNumber + 1
@@ -369,3 +377,86 @@ for label, usedIn in pairs(usedLabels) do
 end
 
 sourceFile:close()
+
+--Encode the binary
+
+for _, instruction in ipairs(program) do
+    local instructionType = instructionsSet[instruction[1]]
+
+    if instructionType == 1 then --[1]: No operands instructions
+        destinationFile:write(string.char(instructionsNumeration[instruction[1]]))
+    elseif instructionType == 2 then --[2]: 1 operand instructions
+        destinationFile:write(string.char(
+            instructionsNumeration[instruction[1]] + lshift(instruction[2][1], 5)
+        ))
+
+        if instruction[2][1] == 0 then --Register
+            destinationFile:write(string.char(registers[instruction[2][2]]))
+        elseif instruction[2][1] == 1 then --Literal value
+            destinationFile:write(string.char(
+                band(instruction[2][2], 0xFF),
+                rshift(instruction[2][2], 8)
+            ))
+        elseif instruction[2][1] == 2 then --Memory reference
+            local offset = instruction[2][3]
+            if offset < 0 then offset = -offset + lshift(1, 4) end
+            destinationFile:write(string.char(
+                registers[instruction[2][2]] + lshift(offset, 3)
+            ))
+        end
+
+    elseif instructionType == 3 then --[3]: 2 operands instructions
+        destinationFile:write(string.char(
+            instructionsNumeration[instruction[1]] + lshift(instruction[2][1], 5) + lshift(instruction[3][1], 7)
+        ))
+
+        if instruction[2][1] == 0 and instruction[3][1] == 0 then
+            destinationFile:write(string.char(
+                registers[instruction[2][2]] + lshift(registers[instruction[3][2]], 4)
+            ))
+
+        else
+            if instruction[2][1] == 0 then --Register
+                destinationFile:write(string.char(registers[instruction[2][2]]))
+            elseif instruction[2][1] == 1 then --Literal value
+                destinationFile:write(string.char(
+                    band(instruction[2][2], 0xFF),
+                    rshift(instruction[2][2], 8)
+                ))
+            elseif instruction[2][1] == 2 then --Memory reference
+                local offset = instruction[2][3]
+                if offset < 0 then offset = -offset + lshift(1, 4) end
+                destinationFile:write(string.char(
+                    registers[instruction[2][2]] + lshift(offset, 3)
+                ))
+            end
+
+            if instruction[3][1] == 0 then --Register
+                destinationFile:write(string.char(registers[instruction[3][2]]))
+            elseif instruction[3][1] == 1 then --Literal value
+                destinationFile:write(string.char(
+                    band(instruction[3][2], 0xFF),
+                    rshift(instruction[3][2], 8)
+                ))
+            end
+        end
+
+    elseif instructionType == 4 then --[4]: Special instructions
+        local instructionName = instruction[1]
+
+        if instructionName == "EXTA" or instructionName == "EXTB" then
+            --TODO: Extension instructions encoding
+        elseif instructionName == "DATA" then
+            for i=2, #instruction do
+                destinationFile:write(string.char(
+                    band(instruction[i][2], 0xFF),
+                    rshift(instruction[i][2], 8)
+                ))
+            end
+        end
+
+    end
+
+end
+
+destinationFile:close()
