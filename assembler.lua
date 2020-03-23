@@ -73,7 +73,7 @@ end
 
 --== Assembler Variables ==--
 
-local lineNumber, operandNumber = 0, 0
+local lineNumber, operandNumber, nextAddress = 0, 0, 0
 
 local program = {} --Contains the instructions and labels of the program we're compiling
 local labels = {}
@@ -178,6 +178,8 @@ local function assembleLine(line)
     if instructionType == 1 then --[1]: No operands instructions
         if nextOperand() then fail(11, instruction) end
 
+        nextAddress = nextAddress + 1 --1 byte instruction
+
     elseif instructionType == 2 then --[2]: 1 operand instructions
         operandNumber = operandNumber + 1
         local operand1 = nextOperand() or fail(12, instruction)
@@ -185,10 +187,15 @@ local function assembleLine(line)
 
         if registers[operand1] then
 
+            nextAddress = nextAddress + 2 --2 bytes instruction
         elseif operand1:sub(1,1) == "[" then
             validateMemoryReference(operand1)
+
+            nextAddress = nextAddress + 3 --3 bytes instruction
         else
             validateLiteralValue(operand1)
+
+            nextAddress = nextAddress + 3 --3 bytes instruction
         end
 
     elseif instructionType == 3 then --[3]: 2 operands instructions
@@ -200,16 +207,28 @@ local function assembleLine(line)
 
         if registers[operand1] then
 
+            nextAddress = nextAddress + 1
         elseif operand1:sub(1,1) == "[" then
             validateMemoryReference(operand1)
+
+            nextAddress = nextAddress + 1
         else
             validateLiteralValue(operand1)
+
+            nextAddress = nextAddress + 2
         end
 
         if registers[operand2] then
 
+            nextAddress = nextAddress + 1
         else
             validateLiteralValue(operand2)
+
+            nextAddress = nextAddress + 2
+        end
+
+        if not registers[operand1] or not registers[operand2] then
+            nextAddress = nextAddress + 1
         end
 
     elseif instructionType == 4 then --[4]: Special instructions
@@ -226,8 +245,14 @@ local function assembleLine(line)
 
             validateLabelName(label)
 
-            if labels[label] then fail(16, labels[label]) end
-            labels[label] = lineNumber
+            if labels[label] then fail(16, labels[label].line) end
+
+            labels[label] = {
+                line=lineNumber,
+                address=nextAddress
+            }
+
+            print("Mark at address", nextAddress)
 
         elseif instruction == "DATA" then
 
@@ -237,6 +262,8 @@ local function assembleLine(line)
             end
 
             if operandNumber == 0 then fail(17) end
+
+            nextAddress = nextAddress + operandNumber*2 --2 bytes for each value
 
         end
     end
