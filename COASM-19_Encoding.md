@@ -16,9 +16,9 @@ Bits numbering: `7 6 5 4 - 3 2 1 0`
 #### Operand-1 types:
 
 - `00` -> A register.
-- `01` -> RESERVED (Treated as `00` for now).
-- `10` -> Literal value.
-- `11` -> Memory pointer.
+- `01` -> Literal value.
+- `10` -> Memory pointer.
+- `11` -> Reserved (Treated as `10` for now).
 
 #### Operand-2 types:
 
