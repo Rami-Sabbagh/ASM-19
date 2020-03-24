@@ -345,7 +345,7 @@ local function executeCycle()
         end
     end
 
-    print(instructionID, instructionType, "Instruction", instructionName, operand1Type, operand1, operand2Type, operand2)
+    print("Instruction", instructionName, operand1Type, operand1, operand2Type, operand2)
 
     local skipPointerUpdate = instructionsBehaviour[instructionID+1](isRegister1, operand1, isRegister2, operand2, bytesRead)
     if not skipPointerUpdate then
@@ -374,7 +374,7 @@ We store somewhere how many bytes this instruction was
 
 local cyclesCounter = 0
 
-print("InsID", "InsType", "-", "InsName", "Op1Type", "Op1", "Op2Type", "Op2")
+print("Instruction", "InsName", "Op1Type", "Op1", "Op2Type", "Op2")
 
 while not halt do
     executeCycle()
