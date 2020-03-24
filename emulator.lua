@@ -130,7 +130,22 @@ local instructionsBehaviour = {
     end,
 
     function(isRegister1, operand1, isRegister2, operand2) -- 7 SWIZ
+        local mask = isRegister2 and registers[operand2] or operand2
+        local value = isRegister1 and registers[operand1] or getShort(operand1)
 
+        local digits = {0,0,0,0,0}
+        for i=1, 5 do
+            digits[i] = value % 10
+            value = math.floor(value / 10)
+        end
+
+        for i=0, 4 do
+            value = value + (digits[mask % 10] or 0) * (10 ^ i)
+            mask = math.floor(mask / 10)
+        end
+
+        if isRegister1 then registers[operand1] = value
+        else setShort(operand1, value) end
     end,
 
     function(isRegister1, operand1) -- 8 NOT
