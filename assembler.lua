@@ -67,7 +67,7 @@ end
 local instructionsNumeration = {
     "HALT", "NOP", --Miscellaneuous
     "ADD", "SUB", "MUL", "DIV", "MOD", "SWIZ", --Arithmetic
-    "NOT", "OR", "XOR", "SHL", "SHR", "SAR", --Bitwise
+    "NOT", "AND", "OR", "XOR", "SHL", "SHR", "SAR", --Bitwise
     "SET", "GET", "PUSH", "POP", "CALL", "RET", --Transfare
     "JMP", "CMP", "JG", "JNG", "JL", "JNL", "JE", "JNE", --Control
     "EXTI", "EXTA", "EXTB" --Extension
