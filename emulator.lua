@@ -1,7 +1,7 @@
 --COASM-19 Emulator
 
 local bit = require("bit")
-local band, bor, lshift, rshift = bit.band, bit.bor, bit.lshift, bit.rshift
+local band, bor, bxor, lshift, rshift = bit.band, bit.bor, bit.bxor, bit.lshift, bit.rshift
 
 local registers = { [0] = 0; 0, 0, 0, 0, 0, 0, 0 } --8 Registers
 local memory = {} --64KB memory
@@ -52,7 +52,7 @@ end
 local instructionsNumeration = {
     "HALT", "NOP", --Miscellaneuous
     "ADD", "SUB", "MUL", "DIV", "MOD", "SWIZ", --Arithmetic
-    "NOT", "OR", "XOR", "SHL", "SHR", "SAR", --Bitwise
+    "NOT", "AND", "OR", "XOR", "SHL", "SHR", "SAR", --Bitwise
     "SET", "GET", "PUSH", "POP", "CALL", "RET", --Transfare
     "JMP", "CMP", "JG", "JNG", "JL", "JNL", "JE", "JNE", --Control
     "EXTI", "EXTA", "EXTB" --Extension
@@ -128,6 +128,168 @@ local instructionsBehaviour = {
             setShort(operand1, getShort(operand1) % value)
         end
     end,
+
+    function(isRegister1, operand1, isRegister2, operand2) -- 7 SWIZ
+
+    end,
+
+    function(isRegister1, operand1) -- 8 NOT
+        if isRegister1 then
+            registers[operand1] = bxor(0xFFFF, registers[operand1])
+        else
+            setShort(operand1, bxor(0xFFFF, getShort(operand1)))
+        end
+    end,
+
+    function(isRegister1, operand1, isRegister2, operand2) -- 9 OR
+        local value = isRegister2 and registers[operand2] or operand2
+
+        if isRegister1 then
+            registers[operand1] = bor(registers[operand1], value)
+        else
+            setShort(operand1, band(getShort(operand1), value))
+        end
+    end,
+
+    function(isRegister1, operand1, isRegister2, operand2) -- 9 OR
+        local value = isRegister2 and registers[operand2] or operand2
+
+        if isRegister1 then
+            registers[operand1] = bor(registers[operand1], value)
+        else
+            setShort(operand1, bor(getShort(operand1), value))
+        end
+    end,
+
+    function(isRegister1, operand1, isRegister2, operand2) -- XOR
+        local value = isRegister2 and registers[operand2] or operand2
+
+        if isRegister1 then
+            registers[operand1] = bxor(registers[operand1], value)
+        else
+            setShort(operand1, bxor(getShort(operand1), value))
+        end
+    end,
+
+    function(isRegister1, operand1, isRegister2, operand2) -- SHL
+        local value = isRegister2 and registers[operand2] or operand2
+
+        if isRegister1 then
+            registers[operand1] = band(lshift(registers[operand1], value), 0xFFFF)
+        else
+            setShort(operand1, band(lshift(getShort(operand1), value)), 0xFFFF)
+        end
+    end,
+
+    function(isRegister1, operand1, isRegister2, operand2) -- SHR
+        local value = isRegister2 and registers[operand2] or operand2
+
+        if isRegister1 then
+            registers[operand1] = rshift(registers[operand1], value)
+        else
+            setShort(operand1, rshift(getShort(operand1), value))
+        end
+    end,
+
+    function(isRegister1, operand1, isRegister2, operand2) -- SAR
+
+    end,
+
+    function(isRegister1, operand1, isRegister2, operand2) -- SET
+        local value = isRegister2 and registers[operand2] or operand2
+
+        if isRegister1 then
+            registers[operand1] = value
+        else
+            setShort(operand1, value)
+        end
+    end,
+
+    function(isRegister1, operand1, isRegister2, operand2) -- GET
+        local value = isRegister1 and getShort(registers[operand1]) or getShort(operand1)
+
+        if isRegister2 then
+            registers[operand2] = value
+        else
+            setShort(operand2, value)
+        end
+    end,
+
+    function(isRegister1, operand1) -- PUSH
+        setShort(registers[5], isRegister1 and registers[operand1] or operand1)
+        registers[5] = math.min(registers[5]+2, 0xFFFF)
+    end,
+
+    function(isRegister1, operand1) -- POP
+        registers[5] = math.max(registers[5]-2, 0)
+
+        if isRegister1 then
+            registers[operand1] = getShort(registers[5])
+        else
+            setShort(operand1, getShort(registers[5]))
+        end
+    end,
+
+    function(isRegister1, operand1, isRegister2, operand2, byteCount) -- CALL
+        setShort(registers[5], math.min(registers[6]+byteCount, 0xFFFF))
+        registers[5] = math.min(registers[5]+2, 0xFFFF)
+        registers[6] = isRegister1 and registers[operand1] or operand1
+        return true
+    end,
+
+    function() -- RET
+        registers[5] = math.max(registers[5]-2, 0)
+        registers[6] = getShort(registers[5])
+        return true
+    end,
+
+    function(isRegister1, operand1) -- JMP
+        registers[6] = isRegister1 and registers[operand1] or operand1
+        return true
+    end,
+
+    function(isRegister1, operand1, isRegister2, operand2) -- CMP
+        --TODO: Solve the issue about negative values
+    end,
+
+    function(isRegister1, operand1, isRegister2, operand2) -- JG
+
+    end,
+
+    function(isRegister1, operand1, isRegister2, operand2) -- JNG
+
+    end,
+
+    function(isRegister1, operand1, isRegister2, operand2) -- JL
+
+    end,
+
+    function(isRegister1, operand1, isRegister2, operand2) -- JNL
+
+    end,
+
+    function(isRegister1, operand1) -- JE
+        if registers[4] == 0 then
+            registers[6] = isRegister1 and registers[operand1] or operand1
+            return true
+        end
+    end,
+
+    function(isRegister1, operand1, isRegister2, operand2) -- JNE
+
+    end,
+
+    function(isRegister1, operand1, isRegister2, operand2) -- EXTI
+
+    end,
+
+    function(isRegister1, operand1, isRegister2, operand2) -- EXTA
+
+    end,
+
+    function(isRegister1, operand1, isRegister2, operand2) -- EXTB
+
+    end
 }
 
 local function executeCycle()
@@ -156,12 +318,12 @@ local function executeCycle()
 
     if instructionType == 3 and isRegister1 and isRegister2 then
         local registersByte = nextByte()
-        operand1 = band(registersByte, 3)
-        operand2 = band(rshift(registersByte, 4), 3)
+        operand1 = band(registersByte, 7)
+        operand2 = band(rshift(registersByte, 4), 7)
     elseif instructionType ~= 4 then
         if instructionType == 2 or instructionType == 3 then
             if isRegister1 then --Register
-                operand1 = band(nextByte(), 3)
+                operand1 = band(nextByte(), 7)
             elseif operand1Type == 1 then --Literal Value
                 operand1 = nextByte() + lshift(nextByte(), 8)
             else --Memory reference
@@ -176,7 +338,7 @@ local function executeCycle()
 
         if instructionType == 3 then
             if isRegister2 then --Register
-                operand2 = band(nextByte(), 3)
+                operand2 = band(nextByte(), 7)
             else --Literal Value
                 operand2 = nextByte() + lshift(nextByte(), 8)
             end
@@ -185,7 +347,7 @@ local function executeCycle()
 
     print(instructionID, instructionType, "Instruction", instructionName, operand1Type, operand1, operand2Type, operand2)
 
-    local skipPointerUpdate = instructionsBehaviour[instructionID+1](isRegister1, operand1, isRegister2, operand2)
+    local skipPointerUpdate = instructionsBehaviour[instructionID+1](isRegister1, operand1, isRegister2, operand2, bytesRead)
     if not skipPointerUpdate then
         registers[6] = math.min(registers[6] + bytesRead, 0xFFFF) --Increase PP by the amount of bytes read
     end
@@ -219,7 +381,3 @@ while not halt do
     print(string.format("Cycle #%d: A:%d B:%d C:%d D:%d T:%d SP:%d PP:%d CK:%d", cyclesCounter, registers[0], unpack(registers)))
     cyclesCounter = cyclesCounter+1
 end
-
---Output registers values after execution
-
-print(string.format("A:%d B:%d C:%d D:%d T:%d SP:%d PP:%d CK:%d", registers[0], unpack(registers)))
