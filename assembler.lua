@@ -130,7 +130,7 @@ local function validateLiteralValue(operand)
     elseif operand:match("^0[bB][01]+$") then --Binary number
         value = tonumber(operand:sub(3, -1), 2)
     elseif operand:match("^%d+$") then --Unsigned decimal number
-        value = tonumber(operand:sub(1,-2), 10)
+        value = tonumber(operand, 10)
     else --Invalid literal value
         fail(5)
     end
