@@ -206,8 +206,19 @@ local instructionsBehaviour = {
         end
     end,
 
+    --TODO: Test the arithmetic shift if it works correctly
     function(isRegister1, operand1, isRegister2, operand2) -- SAR
+        local bits = isRegister2 and registers[operand2] or operand2
+        local value = isRegister1 and registers[operand1] or getShort(operand1)
 
+        if value >= 0x8000 then
+            value = band(0xFFFF, rshift(value, bits))
+        else
+            value = rshift(value, bits)
+        end
+
+        if isRegister1 then registers[operand1] = value
+        else setShort(operand1, value) end
     end,
 
     function(isRegister1, operand1, isRegister2, operand2) -- SET
