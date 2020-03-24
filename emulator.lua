@@ -256,7 +256,7 @@ local instructionsBehaviour = {
         end
     end,
 
-    function(isRegister1, operand1, isRegister2, operand2, byteCount) -- CALL
+    function(isRegister1, operand1, _, _, byteCount) -- CALL
         setShort(registers[5], math.min(registers[6]+byteCount, 0xFFFF))
         registers[5] = math.min(registers[5]+2, 0xFFFF)
         registers[6] = isRegister1 and registers[operand1] or operand1
