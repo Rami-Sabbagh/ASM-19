@@ -14,7 +14,7 @@ local errorMessages = {
     "Label identifier can't be a register name (%s)", --4, String (Register name)
 
     "Invalid literal value", --5
-    "Signed number out of range [-32768, 32767]", --6
+    "Signed number out of range [-32768, 32767]", --6 --TODO: Remove this error message
     "Unsigned number out of range [0, 65535]", --7
 
     "Invalid memory reference", --8
@@ -123,30 +123,21 @@ local function validateLiteralValue(operand)
         return validateLabelName(operand)
     end
 
-    local signed, value = false
+    local value = 0
 
     if operand:match("^0[xX]%x+$") then --Hexadecimal number
         value = tonumber(operand:sub(3, -1), 16)
     elseif operand:match("^0[bB][01]+$") then --Binary number
         value = tonumber(operand:sub(3, -1), 2)
-    elseif operand:match("^%-?%d+$") then --Signed decimal number
-        signed, value = true, tonumber(operand, 10)
-    elseif operand:match("^%d+[uU]$") then --Unsigned decimal number
+    elseif operand:match("^%d+$") then --Unsigned decimal number
         value = tonumber(operand:sub(1,-2), 10)
     else --Invalid literal value
         fail(5)
     end
 
     --Check value range
-    if signed and (value < -32768 or value > 32767) then
-        fail(6)
-    elseif not signed and (value < 0 or value > 65535) then
+    if value < 0 or value > 65535 then
         fail(7)
-    end
-
-    --Encode signed short
-    if signed and value < 0 then
-        value = 0xFFFF + value + 1
     end
 
     return value
