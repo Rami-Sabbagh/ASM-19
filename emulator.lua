@@ -275,34 +275,49 @@ local instructionsBehaviour = {
     end,
 
     function(isRegister1, operand1, isRegister2, operand2) -- CMP
-        --TODO: Solve the issue about negative values
+        local value1 = isRegister1 and registers[operand1] or getShort(operand1)
+        local value2 = isRegister2 and registers[operand2] or operand2
+
+        local comp = math.max(math.min(value2 - value1, 0x7FFF), -0x8000)
+        if comp < 0 then comp = 0xFFFF - comp end
+
+        registers[4] = comp
     end,
 
-    function(isRegister1, operand1, isRegister2, operand2) -- JG
-
+    function(isRegister1, operand1) -- JG
+        if registers[4] > 0x7FFF or registers[4] == 0 then return end
+        registers[6] = isRegister1 and registers[operand1] or operand1
+        return true
     end,
 
-    function(isRegister1, operand1, isRegister2, operand2) -- JNG
-
+    function(isRegister1, operand1) -- JNG
+        if registers[4] <= 0x7FFF and registers[4] ~= 0 then return end
+        registers[6] = isRegister1 and registers[operand1] or operand1
+        return true
     end,
 
-    function(isRegister1, operand1, isRegister2, operand2) -- JL
-
+    function(isRegister1, operand1) -- JL
+        if registers[4] <= 0x7FFF or registers[4] == 0 then return end
+        registers[6] = isRegister1 and registers[operand1] or operand1
+        return true
     end,
 
-    function(isRegister1, operand1, isRegister2, operand2) -- JNL
-
+    function(isRegister1, operand1) -- JNL
+        if registers[4] > 0x7FFF and registers[4] ~= 0 then return end
+        registers[6] = isRegister1 and registers[operand1] or operand1
+        return true
     end,
 
     function(isRegister1, operand1) -- JE
-        if registers[4] == 0 then
-            registers[6] = isRegister1 and registers[operand1] or operand1
-            return true
-        end
+        if registers[4] ~= 0 then return end
+        registers[6] = isRegister1 and registers[operand1] or operand1
+        return true
     end,
 
-    function(isRegister1, operand1, isRegister2, operand2) -- JNE
-
+    function(isRegister1, operand1) -- JNE
+        if registers[4] ~= 0 then return end
+        registers[6] = isRegister1 and registers[operand1] or operand1
+        return true
     end,
 
     function(isRegister1, operand1, isRegister2, operand2) -- EXTI
@@ -395,7 +410,6 @@ We store somewhere how many bytes this instruction was
 2- We execute the instruction behaviour
 3- We increase the PP register with the number of bytes we read for this instruction
 4- We increase CK by one (The clock register)
-
 ]]
 
 local cyclesCounter = 0
