@@ -60,12 +60,12 @@ local instructionsNumeration = {
 
 --Get a short integer from memory
 local function getShort(address)
-    return memory[address] + lshift(memory[address+1], 8)
+    return memory[address] + lshift(memory[math.min(address+1, 0xFFFF)], 8)
 end
 
 --Set a short integer in memory
 local function setShort(address, value)
-    memory[address], memory[address+1] = band(value, 0xFF), rshift(value, 8)
+    memory[address], memory[math.min(address+1), 0xFFFF] = band(value, 0xFF), rshift(value, 8)
 end
 
 local instructionsBehaviour = {
