@@ -1,5 +1,5 @@
 
-# COASM-19 Instruction Set Architect
+# ASM-19 Instruction Set Architect
 
 - 16-bit processor
 - Supports memories with 8bits width.

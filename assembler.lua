@@ -1,4 +1,4 @@
---COASM-19 Assembler
+--ASM-19 Assembler
 
 local bit = require("bit")
 local band, lshift, rshift = bit.band, bit.lshift, bit.rshift

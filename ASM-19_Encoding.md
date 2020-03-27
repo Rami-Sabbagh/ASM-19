@@ -1,5 +1,5 @@
 
-# COASM-19 Instructions Encoding
+# ASM-19 Instructions Encoding
 
 ## Standard instructions with 2 oprands
 

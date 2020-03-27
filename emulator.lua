@@ -1,4 +1,4 @@
---COASM-19 Emulator
+--ASM-19 Emulator
 
 local bit = require("bit")
 local band, bor, bxor, lshift, rshift = bit.band, bit.bor, bit.bxor, bit.lshift, bit.rshift
