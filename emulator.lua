@@ -65,7 +65,7 @@ end
 
 --Set a short integer in memory
 local function setShort(address, value)
-    memory[address], memory[math.min(address+1), 0xFFFF] = band(value, 0xFF), rshift(value, 8)
+    memory[address], memory[math.min(address+1, 0xFFFF)] = band(value, 0xFF), rshift(value, 8)
 end
 
 local instructionsBehaviour = {
@@ -373,7 +373,7 @@ local function executeCycle()
                 local offset = rshift(referenceByte, 3)
                 if offset > 15 then offset = -(32-offset) end
 
-                operand1 = getShort(math.max(math.min(registers[register]+offset, 0xFFFF), 0))
+                operand1 = math.max(math.min(registers[register]+offset, 0xFFFF), 0)
             end
         end
 
