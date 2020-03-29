@@ -156,17 +156,17 @@ local instructionsBehaviour = {
         end
     end,
 
-    function(isRegister1, operand1, isRegister2, operand2) -- 9 OR
+    function(isRegister1, operand1, isRegister2, operand2) -- 9 AND
         local value = isRegister2 and registers[operand2] or operand2
 
         if isRegister1 then
-            registers[operand1] = bor(registers[operand1], value)
+            registers[operand1] = band(registers[operand1], value)
         else
             setShort(operand1, band(getShort(operand1), value))
         end
     end,
 
-    function(isRegister1, operand1, isRegister2, operand2) -- 9 OR
+    function(isRegister1, operand1, isRegister2, operand2) -- 10 OR
         local value = isRegister2 and registers[operand2] or operand2
 
         if isRegister1 then
