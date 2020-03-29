@@ -321,7 +321,7 @@ local instructionsBehaviour = {
     end,
 
     function(isRegister1, operand1, isRegister2, operand2) -- EXTI
-
+		print("EXIT", isRegister1 and registers[operand1] or operand1)
     end,
 
     function(isRegister1, operand1, isRegister2, operand2) -- EXTA
