@@ -90,6 +90,13 @@ The opcode is a 16-bit value, an ID between `0` and `65535` (`65536` opcodes).
 | `0x0639`     | `0x0692`   | SWAP             |
 | `0x0693`     | `0x06EC`   | CMP              |
 
+##### Reserved opcodes and opcodes for extensions
+
+Opcodes from `0x06ED` to `0xEFFF` are RESERVED, and act as the **HALT** instruction!
+
+Opcodes from `0xF000` to `0xFFFF` are for usage by extensions, if no extension is active, then they act as the **HALT** instruction!
+
+
 ## Operand types
 
 | ID  | Type                              |
