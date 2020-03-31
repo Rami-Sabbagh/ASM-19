@@ -7,7 +7,7 @@
 - Designed to be used by programmers and embedded in games
 - Not tied to the real processors limitations, instead it takes advantage of it's virtual existance
 - Each instruction takes a specific number of operands
-- Encoding for 66,536 operands. 1,493 operands used by the standard instruction set
+- Encoding for 66,536 operands. 1,773 operands used by the standard instruction set
 
 ## Registers (8 Registers)
 
@@ -24,9 +24,9 @@ ASM-19 has 8 registers, each can store a 16-bit value.
 | PP | Program pointer | Points to the current instruction location |
 | FL | Flags | Contains the flag bits |
 
-## Instructions Set Overview (30 Instructions)
+## Instructions Set Overview (34 Instructions)
 
-ASM-19 has a standard instruction set of 30 instructions, which uses 1,493 opcodes.
+ASM-19 has a standard instruction set of 34 instructions, which uses 1,773 opcodes.
 
 ### Arithmetic Instructions
 
@@ -35,8 +35,12 @@ ASM-19 has a standard instruction set of 30 instructions, which uses 1,493 opcod
 | ADD | 2 | Addition |
 | SUB | 2 | Subtraction |
 | MUL | 2 | Multiplication |
+| SMUL | 2 | Signed multiplication |
 | DIV | 2 | Division |
+| SDIV | 2 | Signed division |
 | MOD | 2 | Modulo |
+| SMOD | 2 | Signed modulo |
+| NEG | 1 | Negate |
 
 ### Logic Instructions
 
