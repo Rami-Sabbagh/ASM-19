@@ -315,7 +315,7 @@ local instructionsBehaviour = {
     end,
 
     function(isRegister1, operand1) -- JNE
-        if registers[4] ~= 0 then return end
+        if registers[4] == 0 then return end
         registers[6] = isRegister1 and registers[operand1] or operand1
         return true
     end,
