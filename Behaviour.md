@@ -1,5 +1,5 @@
 
-# ASM-19 machine behavior
+# ASM-19 Machine Behavior
 
 The ASM-19 machine reads the binary encoded instructions from the memory.
 
