@@ -94,7 +94,7 @@ The operand in this case specifies a memory address.
 | XOR | destination | source | `destination ^= source` |
 | SHL | destination | source | `destination <<= source` |
 | SHR | destination | source | `destination >>= source` |
-| SAR | destination | source | `destination >>> = source` (Arithmetic shift right) |
+| SAR | destination | source | `destination >>>= source` (Arithmetic shift right) |
 
 ### Control instructions
 
