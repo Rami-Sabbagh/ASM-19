@@ -41,16 +41,16 @@ The opcode is a 16-bit value, an ID between `0` and `65535` (`65536` opcodes).
 
 #### Instructions with no operands
 
-| Opcode | Instruction name |
-| ------:|:---------------- |
-| 0x0000 | HALT             |
-| 0x0001 | NOP              |
-| 0x0002 | RET              |
+| Opcode   | Instruction name |
+| --------:|:---------------- |
+| `0x0000` | HALT             |
+| `0x0001` | NOP              |
+| `0x0002` | RET              |
 
 #### Instructions with 1 operand
 
 | Start opcode | End opcode | Instruction name |
-| ------------ | ---------- | ---------------- |
+| ------------:|:---------- | ---------------- |
 | `0x0003`     | `0x000C`   | NEG              |
 | `0x000D`     | `0x0016`   | NOT              |
 | `0x0017`     | `0x0020`   | PUSH             |
@@ -70,7 +70,7 @@ The opcode is a 16-bit value, an ID between `0` and `65535` (`65536` opcodes).
 #### Instructions with 2 operands
 
 | Start opcode | End opcode | Instruction name |
-| ------------ | ---------- | ---------------- |
+| ------------:|:---------- | ---------------- |
 | `0x0099`     | `0x00F2`   | ADD              |
 | `0x00F3`     | `0x014C`   | SUB              |
 | `0x014D`     | `0x01A6`   | MUL              |
