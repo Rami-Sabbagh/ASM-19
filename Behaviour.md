@@ -72,7 +72,7 @@ The operand in this case specifies a memory address.
 
 | Instruction name | First operand type | Second operand type | Behavior |
 | ---------------- | ------------------ | ------------------- | -------- |
-| NEG | destination | - | Inverses the value sign (XORs with `0x8000`) `destination *= -1` |
+| NEG | destination | - | Inverses the value sign (NOTs, and then adds 1) `destination *= -1` |
 | ADD | destination | source | `destination += source` |
 | SUB | destination | source | `destination -= source` |
 | MUL | destination | source | `destination *= source` |
