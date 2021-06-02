@@ -6,7 +6,7 @@ ASM-19 is a "fantasy" instruction set architecture, which is never made to be bu
 ## Implementations
 
 - [implementation-01](https://github.com/Rami-Sabbagh/ASM-19/tree/implementation-01)
-- [implementation-02](https://github.com/Rami-Sabbagh/ASM-19/tree/implementation-02) 
+- [implementation-02](https://github.com/Rami-Sabbagh/ASM-19/tree/implementation-02)
 
 ## Motivation
 
