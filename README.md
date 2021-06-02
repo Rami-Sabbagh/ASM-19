@@ -1,29 +1,26 @@
 
-# ASM-19
+# Implementation 01
 
-ASM-19 is a "fantasy" instruction set architecture, which is never made to be built into real hardware.
+The first attempt at implementing the ASM-19 project.
 
-## Motivation
+It's made as a prototype, without any instructions on how to really use it and how it works.
 
-It was made as a challenge project during the lockdown days of the COVID-19 virus inorder to pass time.
+And that makes it not usable by anyone except the one who wrote it.
 
-## Objectives
+## Issues
 
-- Create a set of instructions, which must be [turing complete / computationally universal](https://en.wikipedia.org/wiki/Turing_completeness), so it can "simulate any Turing machine" like our personal computers.
+- The text format of ASM-19 programs was not documented.
+- The machine design documents are not written with a good introduction / overview sections.
+- The assembler and emulator's implementation must be read to know how to use them.
 
-- Create a text format for representing a program.
+## Tools used
 
-- Define the architecture of a virtual processor which:
+- `markdown` to write the machine design documents.
+- `luajit` to implement the assembler and the emulator.
+- `notepad++` for editting ASM-19 files.
 
-  - Runs the ASM-19 instructions.
-  - Stores the program instructions using a binary format in memory.
+## Project structure
 
-- Create an assembler which assembles programs from the text format into the binary format, as memory images for the virtual processor.
-
-- Create an emulator of the virtual processor that can load and run the memory images.
-
-## Gained values
-
-- Learnt much deeper low-level knowledge on how a real machine is built.
-- Learnt how assemblers and emulators can be made.
-- Respect the huge architectural work done on computers.
+- `docs`: Contains the written machine design documents.
+- `scripts`: Contains the implemented Lua scripts.
+- `misc`: Contains syntax highlighting definition for Notepad++ to highlight the ASM-19 program files.
