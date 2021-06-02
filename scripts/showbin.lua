@@ -1,4 +1,4 @@
---Simple script for displaying a binary file
+--A simple script for displaying a binary file
 local file = io.open(..., "rb")
 
 local bit = require("bit")
